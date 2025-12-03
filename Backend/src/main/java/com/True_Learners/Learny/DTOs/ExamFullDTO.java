@@ -7,59 +7,32 @@ import java.util.List;
 /**
  * EXAM FULL DTO
  * 
- * BU DTO NE İŞE YARAR?
- * - Öğrenci sınava başladığında backend'den tam sınav verilerini alır
- * - Sınav bilgileri + Sorular + Her sorunun seçenekleri
- * - Frontend'de sınav sayfasını render etmek için kullanılır
- * 
- * İÇERİK:
- * - Sınav temel bilgileri (başlık, açıklama, süre)
- * - Tüm sorular (liste)
- * - Her sorunun seçenekleri (nested liste)
- * 
- * GÜVENLİK:
- * - Seçeneklerde "doğru" bilgisi GÖNDERİLMEZ
- * - Öğrenci doğru cevapları göremez
- * - Sadece soru metinleri ve seçenek metinleri gider
+ * Öğrenci sınava başladığında backend'den gelen tam sınav verisi
+ * Sorular ve seçenekler dahil (ama doğru cevaplar gizli)
  */
 public class ExamFullDTO {
     
-    // Sınav bilgileri
-    private int examId;
+    private Integer examId;
     private String title;
     private String description;
-    private int durationMinutes;
+    private Integer durationMinutes;
     private LocalDateTime createdAt;
-    
-    // Ders bilgisi
-    private int courseId;
+    private Integer courseId;
     private String courseName;
-    
-    // Sorular ve seçenekleri
     private List<QuestionDTO> questions;
     
-    // Constructors
-    public ExamFullDTO() {}
+    // ========== CONSTRUCTORS ==========
     
-    public ExamFullDTO(int examId, String title, String description, int durationMinutes,
-                       LocalDateTime createdAt, int courseId, String courseName,
-                       List<QuestionDTO> questions) {
-        this.examId = examId;
-        this.title = title;
-        this.description = description;
-        this.durationMinutes = durationMinutes;
-        this.createdAt = createdAt;
-        this.courseId = courseId;
-        this.courseName = courseName;
-        this.questions = questions;
+    public ExamFullDTO() {
     }
     
-    // Getters and Setters
-    public int getExamId() {
+    // ========== GETTERS & SETTERS ==========
+    
+    public Integer getExamId() {
         return examId;
     }
     
-    public void setExamId(int examId) {
+    public void setExamId(Integer examId) {
         this.examId = examId;
     }
     
@@ -79,11 +52,11 @@ public class ExamFullDTO {
         this.description = description;
     }
     
-    public int getDurationMinutes() {
+    public Integer getDurationMinutes() {
         return durationMinutes;
     }
     
-    public void setDurationMinutes(int durationMinutes) {
+    public void setDurationMinutes(Integer durationMinutes) {
         this.durationMinutes = durationMinutes;
     }
     
@@ -95,11 +68,11 @@ public class ExamFullDTO {
         this.createdAt = createdAt;
     }
     
-    public int getCourseId() {
+    public Integer getCourseId() {
         return courseId;
     }
     
-    public void setCourseId(int courseId) {
+    public void setCourseId(Integer courseId) {
         this.courseId = courseId;
     }
     
@@ -119,36 +92,30 @@ public class ExamFullDTO {
         this.questions = questions;
     }
     
-    /**
-     * QUESTION DTO (İç sınıf)
-     * 
-     * Her soru için:
-     * - Soru ID
-     * - Soru metni
-     * - Soru tipi (CoktanSecmeli / DogruYanlis)
-     * - Seçenekler listesi
-     */
+    // ========== NESTED CLASS: QUESTION DTO ==========
+    
     public static class QuestionDTO {
-        private int questionId;
+        
+        private Integer questionId;
         private String text;
-        private String type; // "CoktanSecmeli" veya "DogruYanlis"
+        private String type;
         private List<OptionDTO> options;
         
-        public QuestionDTO() {}
+        public QuestionDTO() {
+        }
         
-        public QuestionDTO(int questionId, String text, String type, List<OptionDTO> options) {
+        public QuestionDTO(Integer questionId, String text, String type, List<OptionDTO> options) {
             this.questionId = questionId;
             this.text = text;
             this.type = type;
             this.options = options;
         }
         
-        // Getters and Setters
-        public int getQuestionId() {
+        public Integer getQuestionId() {
             return questionId;
         }
         
-        public void setQuestionId(int questionId) {
+        public void setQuestionId(Integer questionId) {
             this.questionId = questionId;
         }
         
@@ -177,33 +144,27 @@ public class ExamFullDTO {
         }
     }
     
-    /**
-     * OPTION DTO (İç sınıf)
-     * 
-     * Her seçenek için:
-     * - Seçenek ID
-     * - Seçenek metni
-     * 
-     * ÖNEMLİ: "doğru" bilgisi burada YOK!
-     * Öğrenci doğru cevabı göremez.
-     */
+    // ========== NESTED CLASS: OPTION DTO ==========
+    
     public static class OptionDTO {
-        private int optionId;
+        
+        private Integer optionId;
         private String text;
+        // NOT: isCorrect alanı YOK - öğrenciye gösterilmez!
         
-        public OptionDTO() {}
+        public OptionDTO() {
+        }
         
-        public OptionDTO(int optionId, String text) {
+        public OptionDTO(Integer optionId, String text) {
             this.optionId = optionId;
             this.text = text;
         }
         
-        // Getters and Setters
-        public int getOptionId() {
+        public Integer getOptionId() {
             return optionId;
         }
         
-        public void setOptionId(int optionId) {
+        public void setOptionId(Integer optionId) {
             this.optionId = optionId;
         }
         

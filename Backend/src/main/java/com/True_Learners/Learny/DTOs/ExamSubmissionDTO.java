@@ -6,59 +6,40 @@ import java.util.List;
 /**
  * EXAM SUBMISSION DTO
  * 
- * BU DTO NE İŞE YARAR?
- * - Öğrenci sınavı bitirdiğinde cevaplarını backend'e gönderir
- * - Backend bu cevapları alır, doğru cevaplarla karşılaştırır
- * - Puanı hesaplar ve kaydeder
- * 
- * AKIŞ:
- * Frontend -> POST /api/exams/submit -> Backend
- * 
- * İÇERİK:
- * - Sınav ID
- * - Öğrenci ID
- * - Her soru için: Soru ID + Seçilen seçenek ID(leri)
- * 
- * ÖRNEK JSON:
- * {
- *   "examId": 1,
- *   "studentId": 6,
- *   "answers": [
- *     { "questionId": 1, "selectedOptionIds": [3] },
- *     { "questionId": 2, "selectedOptionIds": [7] },
- *     { "questionId": 3, "selectedOptionIds": [11, 12] }
- *   ]
- * }
+ * Öğrenci sınavı bitirdiğinde frontend'den gelen cevaplar
  */
 public class ExamSubmissionDTO {
     
-    private int examId;
-    private int studentId;
+    private Integer examId;
+    private Integer studentId;
     private List<AnswerDTO> answers;
     
-    // Constructors
-    public ExamSubmissionDTO() {}
+    // ========== CONSTRUCTORS ==========
     
-    public ExamSubmissionDTO(int examId, int studentId, List<AnswerDTO> answers) {
+    public ExamSubmissionDTO() {
+    }
+    
+    public ExamSubmissionDTO(Integer examId, Integer studentId, List<AnswerDTO> answers) {
         this.examId = examId;
         this.studentId = studentId;
         this.answers = answers;
     }
     
-    // Getters and Setters
-    public int getExamId() {
+    // ========== GETTERS & SETTERS ==========
+    
+    public Integer getExamId() {
         return examId;
     }
     
-    public void setExamId(int examId) {
+    public void setExamId(Integer examId) {
         this.examId = examId;
     }
     
-    public int getStudentId() {
+    public Integer getStudentId() {
         return studentId;
     }
     
-    public void setStudentId(int studentId) {
+    public void setStudentId(Integer studentId) {
         this.studentId = studentId;
     }
     
@@ -70,35 +51,29 @@ public class ExamSubmissionDTO {
         this.answers = answers;
     }
     
+    // ========== NESTED CLASS: ANSWER DTO ==========
+    
     /**
-     * ANSWER DTO (İç sınıf)
-     * 
-     * Her cevap için:
-     * - Soru ID
-     * - Seçilen seçenek ID(leri)
-     * 
-     * NOT:
-     * - Çoktan seçmeli: 1 seçenek ID
-     * - Çoklu seçim: Birden fazla seçenek ID
-     * - Boş cevap: selectedOptionIds = [] (boş liste)
+     * Tek bir soru için öğrencinin cevabı
      */
     public static class AnswerDTO {
-        private int questionId;
+        
+        private Integer questionId;
         private List<Integer> selectedOptionIds;
         
-        public AnswerDTO() {}
+        public AnswerDTO() {
+        }
         
-        public AnswerDTO(int questionId, List<Integer> selectedOptionIds) {
+        public AnswerDTO(Integer questionId, List<Integer> selectedOptionIds) {
             this.questionId = questionId;
             this.selectedOptionIds = selectedOptionIds;
         }
         
-        // Getters and Setters
-        public int getQuestionId() {
+        public Integer getQuestionId() {
             return questionId;
         }
         
-        public void setQuestionId(int questionId) {
+        public void setQuestionId(Integer questionId) {
             this.questionId = questionId;
         }
         

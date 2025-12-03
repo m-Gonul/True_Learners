@@ -1,28 +1,27 @@
-// src/main/java/com/True_Learners/Learny/Entities/OptionChoice.java
+// src/main/java/com/True_Learners/Learny/Entities/Option.java
 package com.True_Learners.Learny.Entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import jakarta.persistence.*;
 
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
-@Table(name = "Secenekler")
+@Table(name = "secenekler")
 public class Option {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "Secenekid")
+    @Column(name = "secenekid")
     private int id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "Soruid", nullable = false)
+    @JoinColumn(name = "soruid", nullable = false)
     private Question question;
 
-    @Column(name = "Secenekmetni", nullable = false, length = 255)
+    @Column(name = "secenek_metni", nullable = false, length = 255)
     private String text;
 
-    @Column(name = "Dogrumu", nullable = false)
+    @Column(name = "dogrumu", nullable = false)
     private boolean correct;
 
     public Option() {

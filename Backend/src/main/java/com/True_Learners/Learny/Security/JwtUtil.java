@@ -15,7 +15,7 @@ import java.util.Map;
 /**
  * JWT (JSON Web Token) işlemleri için Utility sınıfı
  * 
- * JWT NEDİR?
+ *
  * - Stateless authentication için kullanılan token formatı
  * - 3 bölümden oluşur: Header.Payload.Signature
  * - Payload'da kullanıcı bilgileri (email, role, id) saklanır

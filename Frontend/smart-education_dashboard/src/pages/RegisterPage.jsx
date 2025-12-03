@@ -1,3 +1,4 @@
+// src/pages/RegisterPage.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { register } from "../api/AuthApi";
@@ -194,8 +195,7 @@ const RegisterPage = () => {
           <div className="brand-header">
             <div className="brand-icon">✏️</div>
             <div className="brand-text">
-              <div className="title">smart education</div>
-              <div className="subtitle">your best slogan here</div>
+              <div className="title">Learny</div>
             </div>
           </div>
 
@@ -302,10 +302,10 @@ const RegisterPage = () => {
                 </div>
               </div>
 
-              {/* Şifre Tekrar */}
+              {/* Şifre Tekrarı */}
               <div className="form-row">
                 <label className="form-label" htmlFor="confirmPasswordInput">
-                  <span>Şifre Tekrar</span>
+                  <span>Şifre Tekrarı</span>
                 </label>
                 <div className="input-wrapper">
                   <input
@@ -332,30 +332,30 @@ const RegisterPage = () => {
 
               {/* Rol Seçimi */}
               <div className="form-row">
-                <label className="form-label" htmlFor="roleSelect">
+                <label className="form-label" htmlFor="roleInput">
                   <span>Rolünüzü Seçin</span>
                 </label>
                 <div className="input-wrapper">
                   <select
-                    className="input-field select-field"
-                    id="roleSelect"
+                    className="input-field"
+                    id="roleInput"
                     name="role"
                     required
                     value={form.role}
                     onChange={handleChange}
                   >
-                    <option value="">Seçiniz...</option>
+                    <option value="">Bir rol seçiniz</option>
                     <option value="Ogrenci">Öğrenci</option>
                     <option value="Ogretmen">Öğretmen</option>
                   </select>
                 </div>
               </div>
 
-              {/* Submit Button */}
-              <button
-                className="register-btn"
+              <button 
+                className="register-btn" 
                 type="submit"
                 disabled={loading}
+                style={{ opacity: loading ? 0.7 : 1 }}
               >
                 <span>{loading ? "Kaydediliyor..." : "Hesap Oluştur"}</span>
               </button>

@@ -1002,3 +1002,190 @@ html, body, #root {
         min-width:0;
       }
     }
+
+    /* User Dropdown Styles - Bu stilleri mevcut CSS dosyanıza ekleyin */
+
+/* ========== USER DROPDOWN ========== */
+
+.user-dropdown-container {
+  position: relative;
+}
+
+.user-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-radius: var(--radius-sm, 8px);
+  transition: background-color 0.2s ease;
+}
+
+.user-chip:hover {
+  background-color: rgba(93, 59, 234, 0.08);
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #5b72ee 0%, #7c4dff 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-info .name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-main, #1e1e2d);
+}
+
+.user-info .role {
+  font-size: 0.75rem;
+  color: var(--text-dim, #6b6b84);
+}
+
+/* Dropdown Menu */
+.user-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 260px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  animation: dropdownFadeIn 0.2s ease;
+  overflow: hidden;
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Dropdown Header */
+.dropdown-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: linear-gradient(135deg, #5b72ee08 0%, #7c4dff08 100%);
+}
+
+.dropdown-user-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #5b72ee 0%, #7c4dff 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+}
+
+.dropdown-user-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.dropdown-user-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-main, #1e1e2d);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropdown-user-email {
+  font-size: 0.8rem;
+  color: var(--text-dim, #6b6b84);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Dropdown Divider */
+.dropdown-divider {
+  height: 1px;
+  background: var(--border-color, #e8e8ef);
+  margin: 0;
+}
+
+/* Dropdown Menu Items */
+.dropdown-menu-items {
+  padding: 0.5rem 0;
+}
+
+.dropdown-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: none;
+  border: none;
+  font-size: 0.9rem;
+  color: var(--text-main, #1e1e2d);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  text-align: left;
+}
+
+.dropdown-menu-item:hover {
+  background-color: rgba(93, 59, 234, 0.06);
+}
+
+.dropdown-menu-item svg {
+  width: 18px;
+  height: 18px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+
+/* Logout Item - Özel stil */
+.dropdown-menu-item.logout-item {
+  color: #e74c3c;
+  margin: 0.5rem;
+  border-radius: 8px;
+}
+
+.dropdown-menu-item.logout-item:hover {
+  background-color: rgba(231, 76, 60, 0.08);
+}
+
+.dropdown-menu-item.logout-item svg {
+  stroke: #e74c3c;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .user-info {
+    display: none;
+  }
+  
+  .user-dropdown-menu {
+    width: 240px;
+    right: -10px;
+  }
+}

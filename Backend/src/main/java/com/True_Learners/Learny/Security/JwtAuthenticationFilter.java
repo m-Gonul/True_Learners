@@ -19,7 +19,7 @@ import java.util.Collections;
 /**
  * JWT Authentication Filter
  * 
- * BU FILTER NE YAPAR?
+ *
  * Her HTTP isteğinde çalışır ve:
  * 1. Authorization header'ından JWT token'ı alır
  * 2. Token'ı validate eder

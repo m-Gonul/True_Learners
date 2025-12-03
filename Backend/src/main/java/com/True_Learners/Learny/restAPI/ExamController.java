@@ -1,317 +1,193 @@
-// restAPI/ExamController.java
+// src/main/java/com/True_Learners/Learny/restAPI/ExamController.java
 package com.True_Learners.Learny.restAPI;
 
 import com.True_Learners.Learny.Business.IExamService;
-import com.True_Learners.Learny.DTOs.*;
+import com.True_Learners.Learny.DTOs.ExamCreateDTO;
+import com.True_Learners.Learny.DTOs.ExamFullDTO;
+import com.True_Learners.Learny.DTOs.ExamResultDTO;
+import com.True_Learners.Learny.DTOs.ExamSubmissionDTO;
 import com.True_Learners.Learny.Entities.Exam;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
- * EXAM CONTROLLER
+ * EKSIKSIZ EXAM CONTROLLER
  * 
- * Sınav işlemleri için REST API endpoint'leri
- * 
- * ENDPOINT'LER:
- * - GET /api/exams - Tüm sınavları getir
- * - GET /api/exams/{id} - ID'ye göre sınav getir
- * - GET /api/exams/course/{courseId} - Derse göre sınavları getir
- * - GET /api/exams/{id}/full - Sınav detayları (sorular + seçenekler)
- * - POST /api/exams/add - Basit sınav ekle
- * - POST /api/exams/create - Sorular dahil sınav oluştur
- * - POST /api/exams/submit - Sınav cevaplarını gönder ve puanla
- * - POST /api/exams/update/{id} - Sınav güncelle
- * - POST /api/exams/delete/{id} - Sınav sil
+ * GET ve POST metodları dahil
  */
 @RestController
 @RequestMapping("/api/exams")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "*")
 public class ExamController {
-    
-    private final IExamService examService;
-    
+
     @Autowired
-    public ExamController(IExamService examService) {
-        this.examService = examService;
-    }
-    
-    // ========== TEMEL CRUD İŞLEMLERİ ==========
+    private IExamService examService;
+
+    // ========== GET METODLARI (EKSİK OLAN KISIM) ==========
     
     /**
-     * Tüm sınavları getir
-     * 
-     * ENDPOINT: GET /api/exams
-     * 
-     * KULLANIM: Öğretmen veya öğrenci sınav listesini görüntüler
+     * TÜM SINAVLARI GETİR - GET /api/exams
+     * Frontend'in çağırdığı metod bu!
      */
     @GetMapping
-    public ResponseEntity<List<Exam>> getAll() {
-        List<Exam> exams = examService.getAll();
-        return ResponseEntity.ok(exams);
+    public ResponseEntity<?> getAllExams() {
+        try {
+            List<Exam> exams = examService.getAll();
+            return ResponseEntity.ok(exams);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Sınavlar getirilemedi: " + e.getMessage());
+        }
     }
     
     /**
-     * ID'ye göre sınav getir
-     * 
-     * ENDPOINT: GET /api/exams/{id}
-     * 
-     * KULLANIM: Sınav temel bilgilerini görüntülemek için
+     * ID'YE GÖRE SINAV GETİR - GET /api/exams/{id}
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Exam> getById(@PathVariable int id) {
-        Exam exam = examService.getById(id);
-        if (exam == null) {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<?> getExamById(@PathVariable int id) {
+        try {
+            Exam exam = examService.getById(id);
+            if (exam == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Sınav bulunamadı: " + id);
+            }
+            return ResponseEntity.ok(exam);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Sınav getirilemedi: " + e.getMessage());
         }
-        return ResponseEntity.ok(exam);
     }
     
     /**
-     * Derse göre sınavları getir
-     * 
-     * ENDPOINT: GET /api/exams/course/{courseId}
-     * 
-     * KULLANIM: Belirli bir dersin tüm sınavlarını listele
+     * DERSE GÖRE SINAVLARI GETİR - GET /api/exams/course/{courseId}
      */
     @GetMapping("/course/{courseId}")
-    public ResponseEntity<List<Exam>> getByCourse(@PathVariable int courseId) {
-        List<Exam> exams = examService.getByCourseId(courseId);
-        return ResponseEntity.ok(exams);
+    public ResponseEntity<?> getExamsByCourse(@PathVariable int courseId) {
+        try {
+            List<Exam> exams = examService.getByCourseId(courseId);
+            return ResponseEntity.ok(exams);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Sınavlar getirilemedi: " + e.getMessage());
+        }
     }
     
-    // ========== SINAV DETAYLARI (FULL) ==========
-    
     /**
-     * Sınav detaylarını sorular ve seçeneklerle birlikte getir
-     * 
-     * ENDPOINT: GET /api/exams/{id}/full
-     * 
-     * KULLANIM: Öğrenci sınava başladığında bu endpoint çağrılır
-     * 
-     * RESPONSE:
-     * {
-     *   "examId": 1,
-     *   "title": "Matematik Ara Sınav",
-     *   "durationMinutes": 60,
-     *   "questions": [
-     *     {
-     *       "questionId": 1,
-     *       "text": "2 + 2 = ?",
-     *       "type": "CoktanSecmeli",
-     *       "options": [
-     *         { "optionId": 1, "text": "3" },
-     *         { "optionId": 2, "text": "4" },
-     *         { "optionId": 3, "text": "5" }
-     *       ]
-     *     }
-     *   ]
-     * }
+     * SINAV DETAYLARI (SORULAR + SEÇENEKLER) - GET /api/exams/{id}/full
+     * Öğrenci sınava başladığında bu metod çağrılır
      */
     @GetMapping("/{id}/full")
-    public ResponseEntity<?> getExamWithQuestionsAndOptions(@PathVariable int id) {
+    public ResponseEntity<?> getExamFull(@PathVariable int id) {
         try {
             ExamFullDTO examFullDTO = examService.getExamWithFullDetails(id);
             return ResponseEntity.ok(examFullDTO);
         } catch (RuntimeException e) {
-            return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponse(e.getMessage()));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body("Sınav bulunamadı: " + e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Sınav detayları getirilemedi: " + e.getMessage());
         }
     }
-    
-    // ========== SINAV GÖNDERME VE PUANLAMA ==========
-    
-    /**
-     * Sınav cevaplarını gönder ve puanla
-     * 
-     * ENDPOINT: POST /api/exams/submit
-     * 
-     * KULLANIM: Öğrenci sınavı bitirdiğinde cevapları gönderir
-     * 
-     * REQUEST BODY:
-     * {
-     *   "examId": 1,
-     *   "studentId": 6,
-     *   "answers": [
-     *     { "questionId": 1, "selectedOptionIds": [2] },
-     *     { "questionId": 2, "selectedOptionIds": [5] }
-     *   ]
-     * }
-     * 
-     * RESPONSE:
-     * {
-     *   "score": 85.50,
-     *   "totalQuestions": 10,
-     *   "correctAnswers": 8,
-     *   "wrongAnswers": 2,
-     *   "questionResults": [...]
-     * }
-     */
-    @PostMapping("/submit")
-    public ResponseEntity<?> submitExam(@RequestBody ExamSubmissionDTO examSubmission) {
-        try {
-            ExamResultDTO result = examService.submitExamAndCalculateScore(examSubmission);
-            return ResponseEntity.ok(result);
-        } catch (RuntimeException e) {
-            return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse(e.getMessage()));
-        }
-    }
-    
-    // ========== YENİ SINAV OLUŞTURMA ==========
+
+    // ========== POST METODLARI ==========
     
     /**
-     * Yeni sınav oluştur (sorular ve seçenekler dahil)
-     * 
-     * ENDPOINT: POST /api/exams/create
-     * 
-     * KULLANIM: Öğretmen yeni sınav ekler
-     * 
-     * REQUEST BODY:
-     * {
-     *   "title": "Matematik Ara Sınav",
-     *   "description": "Birinci dönem ara sınav",
-     *   "durationMinutes": 60,
-     *   "courseId": 1,
-     *   "questions": [
-     *     {
-     *       "text": "2 + 2 = ?",
-     *       "type": "CoktanSecmeli",
-     *       "options": [
-     *         { "text": "3", "isCorrect": false },
-     *         { "text": "4", "isCorrect": true },
-     *         { "text": "5", "isCorrect": false }
-     *       ]
-     *     }
-     *   ]
-     * }
-     * 
-     * RESPONSE:
-     * {
-     *   "examId": 15,
-     *   "message": "Sınav başarıyla oluşturuldu"
-     * }
+     * YENİ SINAV OLUŞTUR - POST /api/exams/create
+     * (Mevcut metodunuz, sadece path'i değiştirdim)
      */
     @PostMapping("/create")
-    public ResponseEntity<?> createExam(@Valid @RequestBody ExamCreateDTO examCreateDTO) {
+    public ResponseEntity<?> createExam(@RequestBody ExamCreateDTO dto) {
         try {
-            int examId = examService.createExamWithQuestions(examCreateDTO);
-            return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(new CreateExamResponse(examId, "Sınav başarıyla oluşturuldu"));
-        } catch (RuntimeException e) {
-            return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse(e.getMessage()));
-        }
-    }
-    
-    // ========== ESKİ CRUD İŞLEMLERİ ==========
-    
-    @PostMapping("/add")
-    public ResponseEntity<?> add(@RequestBody Exam exam) {
-        try {
-            examService.add(exam);
-            return ResponseEntity.ok(new SuccessResponse("Sınav eklendi"));
+            int examId = examService.createExamWithQuestions(dto);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Sınav başarıyla oluşturuldu");
+            response.put("examId", examId);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse(e.getMessage()));
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Sınav oluşturulamadı: " + e.getMessage());
         }
     }
     
+    /**
+     * SINAV CEVAPLARINI GÖNDER VE PUANLA - POST /api/exams/submit
+     */
+    @PostMapping("/submit")
+    public ResponseEntity<?> submitExam(@RequestBody ExamSubmissionDTO submission) {
+        try {
+            ExamResultDTO result = examService.submitExamAndCalculateScore(submission);
+            return ResponseEntity.ok(result);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body("Sınav gönderilemedi: " + e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Sınav değerlendirilemedi: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * SINAV GÜNCELLE - POST /api/exams/update/{id}
+     */
     @PostMapping("/update/{id}")
-    public ResponseEntity<?> update(@PathVariable int id, @RequestBody Exam exam) {
+    public ResponseEntity<?> updateExam(@PathVariable int id, @RequestBody Exam exam) {
         try {
             exam.setId(id);
             examService.update(exam);
-            return ResponseEntity.ok(new SuccessResponse("Sınav güncellendi"));
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Sınav başarıyla güncellendi");
+            
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse(e.getMessage()));
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Sınav güncellenemedi: " + e.getMessage());
         }
     }
     
+    /**
+     * SINAV SİL - POST /api/exams/delete/{id}
+     */
     @PostMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable int id) {
+    public ResponseEntity<?> deleteExam(@PathVariable int id) {
         try {
-            Exam e = examService.getById(id);
-            if (e == null) {
-                return ResponseEntity.notFound().build();
+            Exam exam = examService.getById(id);
+            if (exam == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Sınav bulunamadı: " + id);
             }
-            examService.delete(e);
-            return ResponseEntity.ok(new SuccessResponse("Sınav silindi"));
-        } catch (Exception ex) {
-            return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse(ex.getMessage()));
-        }
-    }
-    
-    // ========== RESPONSE CLASSES ==========
-    
-    private static class ErrorResponse {
-        private String error;
-        
-        public ErrorResponse(String error) {
-            this.error = error;
-        }
-        
-        public String getError() {
-            return error;
-        }
-        
-        public void setError(String error) {
-            this.error = error;
-        }
-    }
-    
-    private static class SuccessResponse {
-        private String message;
-        
-        public SuccessResponse(String message) {
-            this.message = message;
-        }
-        
-        public String getMessage() {
-            return message;
-        }
-        
-        public void setMessage(String message) {
-            this.message = message;
-        }
-    }
-    
-    private static class CreateExamResponse {
-        private int examId;
-        private String message;
-        
-        public CreateExamResponse(int examId, String message) {
-            this.examId = examId;
-            this.message = message;
-        }
-        
-        public int getExamId() {
-            return examId;
-        }
-        
-        public void setExamId(int examId) {
-            this.examId = examId;
-        }
-        
-        public String getMessage() {
-            return message;
-        }
-        
-        public void setMessage(String message) {
-            this.message = message;
+            
+            examService.delete(exam);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Sınav başarıyla silindi");
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Sınav silinemedi: " + e.getMessage());
         }
     }
 }
